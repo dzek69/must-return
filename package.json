@@ -1,0 +1,8 @@
+{
+  "name": "must-return",
+  "version": "1.0.0",
+  "description": "Function return value assertions for must.js",
+  "main": "src/index.js",
+  "author": "dzek <git-public@dzek.eu>",
+  "license": "MIT"
+}
