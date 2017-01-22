@@ -104,4 +104,139 @@ describe("must-return", function() {
             }
         });
     });
+
+    describe("when actual value is a function", function() {
+        const returnString = function() {
+            const fn = function() {
+                return "abcd";
+            };
+            fn.must.return("abcd");
+        };
+
+        const returnNumber = function() {
+            const fn = function() {
+                return 56;
+            };
+            fn.must.return(56);
+        };
+
+        const returnBoolean = function() {
+            const fn = function() {
+                return true;
+            };
+            fn.must.return(true);
+        };
+
+        const returnUndefined = function() {
+            const fn = function() {
+                return undefined;
+            };
+            fn.must.return(undefined);
+        };
+
+        const returnWrongString = function() {
+            const fn = function() {
+                return "dcba";
+            };
+            fn.must.return("abcd");
+        };
+
+        const returnWrongNumber = function() {
+            const fn = function() {
+                return 65;
+            };
+            fn.must.return(56);
+        };
+
+        const returnWrongBoolean = function() {
+            const fn = function() {
+                return true;
+            };
+            fn.must.return(false);
+        };
+
+        const returnNullInsteadOfUndefined = function() {
+            const fn = function() {
+                return null;
+            };
+            fn.must.return(undefined);
+        };
+
+        const returnObject = function() {
+            const fn = function() {
+                return { hi: "there" };
+            };
+            fn.must.return({ hi: "there" });
+        };
+
+        it("does not throw when return value is equal to expected value", function() {
+            returnString.must.not.throw();
+            returnNumber.must.not.throw();
+            returnBoolean.must.not.throw();
+            returnUndefined.must.not.throw();
+        });
+
+        it("does throw when references aren't equal", function() {
+            returnObject.must.throw(must.AssertionError);
+        });
+
+        it("does throw when returned value is different", function() {
+            returnWrongString.must.throw(must.AssertionError);
+            returnWrongNumber.must.throw(must.AssertionError);
+            returnWrongBoolean.must.throw(must.AssertionError);
+            returnNullInsteadOfUndefined.must.throw(must.AssertionError);
+        });
+
+        it("throws meaningful information", function() {
+            try {
+                returnWrongString();
+            }
+            catch (e) {
+                const { message, actual, expected } = e;
+                actual.must.equal("dcba");
+                expected.must.equal("abcd");
+                message.must.match(/^function \(\) {\n.*\n\s*} must return "abcd"$/);
+            }
+
+            try {
+                returnWrongNumber();
+            }
+            catch (e) {
+                const { message, actual, expected } = e;
+                actual.must.equal(65);
+                expected.must.equal(56);
+                message.must.match(/^function \(\) {\n.*\n\s*} must return 56$/);
+            }
+
+            try {
+                returnWrongBoolean();
+            }
+            catch (e) {
+                const { message, actual, expected } = e;
+                actual.must.equal(true);
+                expected.must.equal(false);
+                message.must.match(/^function \(\) {\n.*\n\s*} must return false$/);
+            }
+
+            try {
+                returnNullInsteadOfUndefined();
+            }
+            catch (e) {
+                const { message, actual, expected } = e;
+                must(actual).equal(null);
+                must(expected).equal(undefined);
+                message.must.match(/^function \(\) {\n.*\n\s*} must return undefined$/);
+            }
+
+            try {
+                returnObject();
+            }
+            catch (e) {
+                const { message, actual, expected } = e;
+                actual.must.eql({ hi: "there" });
+                expected.must.eql({ hi: "there" });
+                message.must.match(/^function \(\) {\n.*\n\s*} must return {"hi":"there"}$/);
+            }
+        })
+    })
 });
