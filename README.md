@@ -1,3 +1,7 @@
+# DEPRECATED!!!
+
+Nobody uses this thing and it has bugs! It's not recommended to use it
+
 # must-return
 
 Add function return value assertions to Must.js
